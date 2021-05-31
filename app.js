@@ -1,9 +1,14 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
-const app = express();
 const keys = require('./config/keys');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 const User = require('./models/user');
+const Contact = require('./models/contact');
 mongoose
 	.connect(keys.MongoDB, {
 		useNewUrlParser: true,
@@ -48,6 +53,18 @@ app.get('/contact', (req, res) => {
 //save constact from data
 app.post('/contact', (req, res) => {
 	console.log(req.body);
+	const newContact = {
+		email: req.body.email,
+		name: req.body.name,
+		message: req.body.message
+	};
+	new User(newContact).save((err, user) => {
+		if (err) {
+			throw err;
+		} else {
+			console.log('New Contacted was created', user);
+		}
+	});
 });
 app.get('/signup', (req, res) => {
 	res.render('signupForm', {
