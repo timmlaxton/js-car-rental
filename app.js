@@ -1,8 +1,20 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
 const app = express();
-
+const keys = require('./config/keys');
+const mongoose = require('mongoose');
 const User = require('./models/user');
+mongoose
+	.connect(keys.MongoDB, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true
+	})
+	.then(() => {
+		console.log('Connected to MongoDB...');
+	})
+	.catch((err) => {
+		console.log(err);
+	});
 
 app.engine(
 	'handlebars',
@@ -31,6 +43,11 @@ app.get('/contact', (req, res) => {
 	res.render('contact', {
 		title: 'Contact'
 	});
+});
+
+//save constact from data
+app.post('/contact', (req, res) => {
+	console.log(req.body);
 });
 app.get('/signup', (req, res) => {
 	res.render('signupForm', {
