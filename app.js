@@ -54,15 +54,14 @@ app.get('/contact', (req, res) => {
 app.post('/contact', (req, res) => {
 	console.log(req.body);
 	const newContact = {
-		email: req.body.email,
-		name: req.body.name,
+		name: req.user._id,
 		message: req.body.message
 	};
-	new User(newContact).save((err, user) => {
+	new Contact(newContact).save((err, user) => {
 		if (err) {
 			throw err;
 		} else {
-			console.log('New Contacted was created', user);
+			console.log('A new meesage has been sent by user', user);
 		}
 	});
 });
