@@ -2,6 +2,8 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const app = express();
 
+const User = require('./models/user');
+
 app.engine(
 	'handlebars',
 	exphbs({
