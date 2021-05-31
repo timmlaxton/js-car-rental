@@ -3,10 +3,22 @@ const exphbs = require('express-handlebars');
 const keys = require('./config/keys');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const passport = require('passport');
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
+app.use(cookieParser());
+app.use(
+	session({
+		secret: 'mysecret',
+		resacve: true,
+		saveUninitialized: true
+	})
+);
+app.use(passport.initialize());
+app.use(passport.session());
 const User = require('./models/user');
 const Contact = require('./models/contact');
 mongoose
