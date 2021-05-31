@@ -30,6 +30,11 @@ app.get('/contact', (req, res) => {
 		title: 'Contact'
 	});
 });
+app.get('/signup', (req, res) => {
+	res.render('signupForm', {
+		title: 'Register'
+	});
+});
 
 app.listen(port, () => {
 	console.log(`Server is on port ${port}`);
