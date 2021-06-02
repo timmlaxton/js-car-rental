@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
+const bcrypt = require('bcryptjs');
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -13,7 +14,7 @@ app.use(cookieParser());
 app.use(
 	session({
 		secret: 'mysecret',
-		resacve: true,
+		resave: true,
 		saveUninitialized: true
 	})
 );
@@ -81,6 +82,63 @@ app.get('/signup', (req, res) => {
 	res.render('signupForm', {
 		title: 'Register'
 	});
+});
+app.post('/signup', (req, res) => {
+	console.log(req.body);
+	let errors = [];
+	if (req.body.password !== req.body.password2) {
+		error.push({ text: 'Password does not match' });
+	}
+	if (req.body.password.length < 6) {
+		error.push({ text: 'Password must contain at least six characters' });
+	}
+	if (errors.length > 0) {
+		res.render('signupForm', {
+			errors: errors,
+			firstname: req.body.firstname,
+			lastname: req.body.lastname,
+			password: req.body.password,
+			password2: req.body.password2,
+			email: req.body.email
+		});
+	} else {
+		User.findOne({ email: req.body.email }).then((user) => {
+			if (user) {
+				let errors = [];
+				errors.push({ text: 'Email already exists' });
+				res.render('signupForm', {
+					errors: errors,
+					firstname: req.body.firstname,
+					lastname: req.body.lastname,
+					password: req.body.password,
+					password2: req.body.password2,
+					email: req.body.email
+				});
+			} else {
+				let salt = bcrypt.genSaltSync(10);
+				let hash = bcrypt.hashSync(req.body.password, salt);
+
+				const newUser = {
+					firstname: req.body.firstname,
+					lastname: req.body.lastname,
+					email: req.body.email,
+					password: hash
+				};
+				new User(newUser).save((err, user) => {
+					if (err) {
+						throw err;
+					}
+					if (user) {
+						console.log('New user has been created');
+					}
+				});
+			}
+		});
+	}
+});
+
+app.get('/email', (req, res) => {
+	res.render('loginForm');
 });
 
 app.listen(port, () => {
